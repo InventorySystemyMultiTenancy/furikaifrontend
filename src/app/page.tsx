@@ -36,19 +36,6 @@ export default async function HomePage() {
         fallbackImageSrc={homeMedia.heroFallbackImage}
       />
 
-      <ScrollVideoSection
-        desktopSrc={homeMedia.firstScrollVideoDesktop}
-        mobileSrc={
-          mediaExists(homeMedia.firstScrollVideoMobile) ? homeMedia.firstScrollVideoMobile : undefined
-        }
-        texts={[
-          { at: 0, until: 0.22, text: "Não é apenas um clube." },
-          { at: 0.3, until: 0.52, text: "É cultura em movimento." },
-          { at: 0.6, until: 0.8, text: "Built for the streets." },
-          { at: 0.85, until: 1, text: "FURIKAI", variant: "hero" },
-        ]}
-      />
-
       <section className="py-24 px-6 lg:px-10">
         <div className="mx-auto max-w-[1800px]">
           <ProductGrid title="Vitrine principal" showFilters={false} pageSize={8} />
@@ -62,6 +49,19 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <ScrollVideoSection
+        desktopSrc={homeMedia.firstScrollVideoDesktop}
+        mobileSrc={
+          mediaExists(homeMedia.firstScrollVideoMobile) ? homeMedia.firstScrollVideoMobile : undefined
+        }
+        texts={[
+          { at: 0, until: 0.22, text: "Não é apenas um clube." },
+          { at: 0.3, until: 0.52, text: "É cultura em movimento." },
+          { at: 0.6, until: 0.8, text: "Built for the streets." },
+          { at: 0.85, until: 1, text: "FURIKAI", variant: "hero" },
+        ]}
+      />
 
       <EditorialBanner />
 

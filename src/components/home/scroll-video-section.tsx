@@ -47,11 +47,20 @@ export function ScrollVideoSection({
 
     let trigger: ScrollTrigger | undefined;
     let raf = 0;
+    let durationReady = false;
     const targetTime = { value: 0 };
 
-    function onLoaded() {
-      if (!video) return;
+    function markReady() {
+      if (!video || durationReady) return;
+      durationReady = Number.isFinite(video.duration) && video.duration > 0;
+      if (!durationReady) return;
       setReady(true);
+
+      // Safari iOS não pinta nenhum frame de um <video> pausado que nunca
+      // rodou, mesmo setando currentTime manualmente — força a decodificação
+      // de um frame com um play/pause instantâneo antes do usuário rolar.
+      const playPromise = video.play();
+      if (playPromise) playPromise.then(() => video.pause()).catch(() => {});
 
       if (reducedMotion) {
         // Sem scroll-scrubbing: apenas reproduz o vídeo normalmente.
@@ -66,16 +75,19 @@ export function ScrollVideoSection({
         start: "top top",
         end: `+=${pinVh}%`,
         pin: true,
-        scrub: 0.6,
+        // scrub: true (sem número) segue o scroll quase 1:1 — um valor
+        // numérico alto (ex.: 0.6) soma um atraso perceptível de "catch-up"
+        // que fazia o vídeo parecer descolado do scroll real do usuário.
+        scrub: true,
         onUpdate: (self) => {
-          targetTime.value = self.progress * (video.duration || 0);
+          targetTime.value = Math.min(self.progress * video.duration, video.duration - 0.05);
           setProgress(self.progress);
         },
       });
 
       function tick() {
-        if (video && Math.abs(video.currentTime - targetTime.value) > 0.01) {
-          video.currentTime += (targetTime.value - video.currentTime) * 0.35;
+        if (video && durationReady && Math.abs(video.currentTime - targetTime.value) > 0.005) {
+          video.currentTime += (targetTime.value - video.currentTime) * 0.5;
         }
         raf = requestAnimationFrame(tick);
       }
@@ -86,11 +98,14 @@ export function ScrollVideoSection({
       setFailed(true);
     }
 
-    video.addEventListener("loadedmetadata", onLoaded);
+    video.addEventListener("loadedmetadata", markReady);
     video.addEventListener("error", onError);
+    // Fallback pra vídeo já em cache (voltar pra página, bfcache do Safari):
+    // o evento loadedmetadata pode já ter disparado antes do listener existir.
+    if (video.readyState >= 1) markReady();
 
     return () => {
-      video.removeEventListener("loadedmetadata", onLoaded);
+      video.removeEventListener("loadedmetadata", markReady);
       video.removeEventListener("error", onError);
       trigger?.kill();
       cancelAnimationFrame(raf);
@@ -104,6 +119,7 @@ export function ScrollVideoSection({
   return (
     <section ref={sectionRef} className="relative w-full h-screen overflow-hidden bg-furikai-black">
       <video
+        key={source}
         ref={videoRef}
         src={source}
         poster={poster}
