@@ -1,14 +1,15 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { checkRateLimit } from "@/lib/rate-limit";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });
+
+function getBackendUrl() {
+  return process.env.BACKEND_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+}
 
 export const authConfig: NextAuthConfig = {
   session: { strategy: "jwt" },
@@ -28,19 +29,17 @@ export const authConfig: NextAuthConfig = {
         if (!parsed.success) return null;
         const { email, password } = parsed.data;
 
-        const rl = checkRateLimit(`login:${email.toLowerCase()}`, 8, 5 * 60 * 1000);
-        if (!rl.allowed) {
-          throw new Error("Muitas tentativas. Tente novamente em alguns minutos.");
-        }
+        const response = await fetch(`${getBackendUrl()}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
 
-        const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        const user = data?.user;
         if (!user) return null;
-        if (user.blocked || !user.active) {
-          throw new Error("Esta conta está bloqueada. Fale com o suporte.");
-        }
-
-        const valid = await bcrypt.compare(password, user.passwordHash);
-        if (!valid) return null;
 
         return {
           id: user.id,
@@ -55,8 +54,10 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as { role: string }).role;
-        token.id = user.id as string;
+        token.role = user.role;
+        if (user.id) {
+          token.id = user.id;
+        }
       }
       return token;
     },
