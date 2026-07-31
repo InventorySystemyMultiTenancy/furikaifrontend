@@ -5,7 +5,7 @@ const ADMIN_ROLES = new Set(["ADMIN", "STAFF"]);
 
 export default async function middleware(req: Request & { nextUrl: URL }) {
   const { nextUrl } = req;
-  const token = await getToken({ req: req as never, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({ req: req as never, secret: process.env.AUTH_SECRET });
   const isLoggedIn = !!token;
   const role = token?.role as string | undefined;
 
