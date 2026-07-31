@@ -7,6 +7,8 @@ import { Reviews } from "@/components/shop/reviews";
 import { ProductGrid } from "@/components/shop/product-grid";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 async function getProduct(slug: string) {
   const product = await prisma.product.findUnique({
     where: { slug },

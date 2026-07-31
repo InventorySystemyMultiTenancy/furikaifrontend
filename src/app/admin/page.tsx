@@ -75,7 +75,7 @@ export default function AdminDashboard() {
               <YAxis stroke="#6b6b6f" fontSize={11} />
               <Tooltip
                 contentStyle={{ background: "#121214", border: "1px solid #3a3a3d" }}
-                formatter={(v: number) => formatBRL(v)}
+                formatter={(value) => formatBRL(Number(value ?? 0))}
               />
               <Line type="monotone" dataKey="total" stroke="#9c1119" strokeWidth={2} dot={false} />
             </LineChart>
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
               </Pie>
               <Tooltip
                 contentStyle={{ background: "#121214", border: "1px solid #3a3a3d" }}
-                formatter={(v: number) => formatBRL(v)}
+                formatter={(value) => formatBRL(Number(value ?? 0))}
               />
             </PieChart>
           </ResponsiveContainer>

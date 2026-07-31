@@ -6,6 +6,8 @@ import { formatBRL, formatDate } from "@/lib/utils";
 import { ORDER_STATUS_LABEL, ORDER_STATUS_COLOR } from "@/lib/order-status";
 import { ExchangeRequestForm } from "@/components/account/exchange-request-form";
 
+export const dynamic = "force-dynamic";
+
 export default async function PedidoDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await auth();

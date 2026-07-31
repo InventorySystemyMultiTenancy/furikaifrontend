@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { Instagram, Youtube, MessageCircle } from "lucide-react";
+import { Camera, PlayCircle, MessageCircle } from "lucide-react";
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -35,8 +35,8 @@ export function Footer() {
             quem vive o asfalto, a fumaça e as luzes da noite.
           </p>
           <div className="flex gap-4 mt-6">
-            <a href="#" aria-label="Instagram" className="hover:text-furikai-white"><Instagram size={20} /></a>
-            <a href="#" aria-label="YouTube" className="hover:text-furikai-white"><Youtube size={20} /></a>
+            <a href="#" aria-label="Instagram" className="hover:text-furikai-white"><Camera size={20} /></a>
+            <a href="#" aria-label="YouTube" className="hover:text-furikai-white"><PlayCircle size={20} /></a>
             <a href="#" aria-label="WhatsApp" className="hover:text-furikai-white"><MessageCircle size={20} /></a>
           </div>
         </div>

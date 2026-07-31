@@ -3,6 +3,7 @@ import { ProductGrid } from "@/components/shop/product-grid";
 
 export const metadata = { title: "Coleção" };
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function ProdutosPage() {
   const [categories, collections] = await Promise.all([

@@ -9,6 +9,7 @@ import { CommunitySection } from "@/components/home/community-section";
 import Link from "next/link";
 
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 async function getCollections() {
   const collections = await prisma.collection.findMany({

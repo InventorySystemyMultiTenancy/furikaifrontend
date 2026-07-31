@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { formatBRL, formatDate } from "@/lib/utils";
 import { ORDER_STATUS_LABEL, ORDER_STATUS_COLOR } from "@/lib/order-status";
 
+export const dynamic = "force-dynamic";
+
 export default async function PedidosPage() {
   const session = await auth();
   const orders = await prisma.order.findMany({

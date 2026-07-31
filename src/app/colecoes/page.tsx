@@ -3,6 +3,7 @@ import { CollectionsSection } from "@/components/home/collections-section";
 
 export const metadata = { title: "Coleções" };
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function ColecoesPage() {
   const collections = await prisma.collection.findMany({

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { ProductGrid } from "@/components/shop/product-grid";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 async function getCollection(slug: string) {
   return prisma.collection.findUnique({
     where: { slug },
