@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { backendFetch } from "@/lib/backend-client";
 import { ProductGrid } from "@/components/shop/product-grid";
 
 export const metadata = { title: "Coleção" };
@@ -6,9 +6,9 @@ export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
 export default async function ProdutosPage() {
-  const [categories, collections] = await Promise.all([
-    prisma.category.findMany({ orderBy: { name: "asc" } }),
-    prisma.collection.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
+  const [{ body: categoriesBody }, { body: collectionsBody }] = await Promise.all([
+    backendFetch<{ categories: { slug: string; name: string }[] }>("/api/categories"),
+    backendFetch<{ collections: { slug: string; name: string }[] }>("/api/collections"),
   ]);
 
   return (
@@ -16,8 +16,8 @@ export default async function ProdutosPage() {
       <div className="mx-auto max-w-[1800px]">
         <ProductGrid
           title="Coleção completa"
-          categories={categories.map((c) => ({ slug: c.slug, name: c.name }))}
-          collections={collections.map((c) => ({ slug: c.slug, name: c.name }))}
+          categories={categoriesBody.categories ?? []}
+          collections={collectionsBody.collections ?? []}
           pageSize={16}
         />
       </div>

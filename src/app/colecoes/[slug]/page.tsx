@@ -1,16 +1,28 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { prisma } from "@/lib/prisma";
+import { backendFetch } from "@/lib/backend-client";
 import { ProductGrid } from "@/components/shop/product-grid";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
+type CollectionSummary = {
+  slug: string;
+  name: string;
+  description: string | null;
+  coverImage: string | null;
+  productCount: number;
+};
+
 async function getCollection(slug: string) {
-  return prisma.collection.findUnique({
-    where: { slug },
-    include: { _count: { select: { products: true } } },
-  });
+  const { ok, status, body } = await backendFetch<{ collection: CollectionSummary }>(
+    `/api/collections/${slug}`
+  );
+  if (!ok) {
+    if (status === 404) return null;
+    throw new Error(`Falha ao carregar coleção: ${status}`);
+  }
+  return body.collection;
 }
 
 export async function generateMetadata({
@@ -26,7 +38,7 @@ export async function generateMetadata({
 export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const collection = await getCollection(slug);
-  if (!collection || !collection.active) notFound();
+  if (!collection) notFound();
 
   return (
     <div>
@@ -43,7 +55,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
             <p className="text-furikai-gray-300 max-w-xl mt-2">{collection.description}</p>
           )}
           <p className="text-xs uppercase tracking-wider text-furikai-gray-500 mt-2">
-            {collection._count.products} peças
+            {collection.productCount} peças
           </p>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { backendFetch } from "@/lib/backend-client";
 import { mediaExists, homeMedia } from "@/lib/media";
 import { HeroSection } from "@/components/home/hero-section";
 import { ScrollVideoSection } from "@/components/home/scroll-video-section";
@@ -11,19 +11,17 @@ import Link from "next/link";
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
+type CollectionSummary = {
+  slug: string;
+  name: string;
+  description: string | null;
+  coverImage: string | null;
+  productCount: number;
+};
+
 async function getCollections() {
-  const collections = await prisma.collection.findMany({
-    where: { active: true },
-    orderBy: { order: "asc" },
-    include: { _count: { select: { products: true } } },
-  });
-  return collections.map((c) => ({
-    slug: c.slug,
-    name: c.name,
-    description: c.description,
-    coverImage: c.coverImage,
-    productCount: c._count.products,
-  }));
+  const { body } = await backendFetch<{ collections: CollectionSummary[] }>("/api/collections");
+  return body.collections ?? [];
 }
 
 export default async function HomePage() {

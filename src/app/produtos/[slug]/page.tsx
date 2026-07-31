@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { serializeProduct } from "@/lib/serialize";
+import { backendFetch } from "@/lib/backend-client";
+import type { SerializedProduct } from "@/lib/serialize";
 import { Gallery } from "@/components/shop/gallery";
 import { ProductDetail } from "@/components/shop/product-detail";
 import { Reviews } from "@/components/shop/reviews";
@@ -9,22 +9,26 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
+type ProductReview = {
+  id: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  user: { name: string };
+};
+
 async function getProduct(slug: string) {
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    include: {
-      images: true,
-      variants: true,
-      category: true,
-      collection: true,
-      reviews: {
-        where: { approved: true },
-        orderBy: { createdAt: "desc" },
-        include: { user: { select: { name: true } } },
-      },
-    },
-  });
-  return product;
+  const { ok, status, body } = await backendFetch<{
+    product: SerializedProduct;
+    productId: string;
+    reviews: ProductReview[];
+  }>(`/api/products/${slug}`);
+
+  if (!ok) {
+    if (status === 404) return null;
+    throw new Error(`Falha ao carregar produto: ${status}`);
+  }
+  return body;
 }
 
 export async function generateMetadata({
@@ -33,17 +37,17 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProduct(slug);
-  if (!product) return {};
-  return { title: product.name, description: product.shortDescription ?? undefined };
+  const data = await getProduct(slug);
+  if (!data) return {};
+  return { title: data.product.name, description: data.product.shortDescription ?? undefined };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = await getProduct(slug);
-  if (!product || !product.active) notFound();
+  const data = await getProduct(slug);
+  if (!data || !data.product.active) notFound();
 
-  const serialized = serializeProduct(product);
+  const serialized = data.product;
 
   return (
     <div className="pt-28 md:pt-32 pb-24 px-6 lg:px-10">
@@ -55,16 +59,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
         <div className="mt-20 max-w-3xl">
           <h2 className="font-display text-2xl tracking-wide mb-6">Avaliações</h2>
-          <Reviews
-            productId={product.id}
-            reviews={product.reviews.map((r) => ({
-              id: r.id,
-              rating: r.rating,
-              comment: r.comment,
-              createdAt: r.createdAt.toISOString(),
-              user: r.user,
-            }))}
-          />
+          <Reviews productId={data.productId} reviews={data.reviews} />
         </div>
 
         <div className="mt-24">
@@ -72,7 +67,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             title="Você também vai curtir"
             showFilters={false}
             pageSize={4}
-            categorySlug={product.category?.slug}
+            categorySlug={serialized.category?.slug}
           />
         </div>
       </div>
