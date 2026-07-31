@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: furikai
+      POSTGRES_PASSWORD: furikai
+      POSTGRES_DB: furikai
+    ports:
+      - "5432:5432"
+    volumes:
+      - furikai_pgdata:/var/lib/postgresql/data
+
+volumes:
+  furikai_pgdata:
