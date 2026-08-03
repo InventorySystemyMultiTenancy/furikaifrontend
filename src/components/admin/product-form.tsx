@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { slugify } from "@/lib/utils";
+import { MediaUploader, type MediaItem } from "./media-uploader";
 
 type Variant = { id?: string; color: string; size: string; sku: string; stock: number };
 type ImageRow = { url: string; alt: string };
@@ -253,6 +254,15 @@ export function ProductForm({ initial }: { initial?: Partial<ProductFormValues> 
 
       <div>
         <p className="text-sm text-furikai-gray-400 mb-2">Imagens</p>
+        <div className="mb-4">
+          <MediaUploader
+            onUploaded={(item: MediaItem) => {
+              if (item.type !== "IMAGE") return;
+              setMediaImages((m) => [{ url: item.url }, ...m]);
+              addImage(item.url);
+            }}
+          />
+        </div>
         {mediaImages.length > 0 && (
           <select onChange={(e) => addImage(e.target.value)} value="" className={`${inputClass} mb-2`}>
             <option value="">+ Adicionar da mídia enviada...</option>
