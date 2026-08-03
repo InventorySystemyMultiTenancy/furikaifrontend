@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, type FormEvent } from "react";
 import { Camera, PlayCircle, MessageCircle } from "lucide-react";
 
@@ -29,7 +30,10 @@ export function Footer() {
     <footer className="bg-furikai-black-soft border-t border-white/5 text-furikai-gray-300">
       <div className="mx-auto max-w-[1800px] px-6 lg:px-10 py-16 grid grid-cols-1 md:grid-cols-5 gap-12">
         <div className="md:col-span-2">
-          <p className="font-display text-3xl tracking-[0.15em] text-furikai-white mb-4">FURIKAI</p>
+          <div className="flex items-center gap-3 mb-4">
+            <Image src="/assets/logos/ativo-14.png" alt="Furikai" width={44} height={44} className="object-contain" />
+            <p className="font-display text-3xl tracking-[0.15em] text-furikai-white">FURIKAI</p>
+          </div>
           <p className="text-sm max-w-xs leading-relaxed">
             Clube automotivo de identidade urbana e japonesa. Streetwear premium construído para
             quem vive o asfalto, a fumaça e as luzes da noite.
