@@ -13,10 +13,13 @@ import path from "path";
  * fallback elegante em vez de quebrar a página. Veja `resolveMedia()`.
  */
 export const homeMedia = {
-  // Hero 3D — produto em destaque na tela inicial
+  // Hero — produto em destaque na tela inicial. Sem modelo 3D (.glb) ainda,
+  // então o hero usa vídeo em loop como visual principal (ver hero-fallback.tsx).
+  // TODO: trocar por um vídeo dedicado do produto quando houver um; por ora
+  // reaproveita o vídeo de introdução pra não deixar o hero sem vídeo nenhum.
   heroModel: "/assets/models/furikai-shirt.glb",
   heroFallbackImage: "/assets/images/furikai-shirt-fallback.png",
-  heroFallbackVideo: "/assets/videos/hero-rotation.mp4",
+  heroFallbackVideo: "/assets/videos/scroll-intro-desktop.mp4",
 
   // Primeiro vídeo com scroll scrubbing (seção cinematográfica / manifesto)
   firstScrollVideoDesktop: "/assets/videos/scroll-intro-desktop.mp4",

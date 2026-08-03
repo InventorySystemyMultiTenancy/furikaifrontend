@@ -34,6 +34,8 @@ export default async function HomePage() {
         modelSrc={homeMedia.heroModel}
         fallbackImageAvailable={mediaExists(homeMedia.heroFallbackImage)}
         fallbackImageSrc={homeMedia.heroFallbackImage}
+        fallbackVideoAvailable={mediaExists(homeMedia.heroFallbackVideo)}
+        fallbackVideoSrc={homeMedia.heroFallbackVideo}
       />
 
       <section className="py-24 px-6 lg:px-10">
