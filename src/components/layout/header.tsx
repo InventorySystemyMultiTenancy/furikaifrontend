@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X, Search, User, Heart, ShoppingBag } from "lucide-react";
+import { Menu, X, Search, User, Heart, ShoppingBag, LayoutDashboard } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart";
@@ -37,6 +37,7 @@ export function Header() {
 
   const isHome = pathname === "/";
   const transparent = isHome && !scrolled && !mobileOpen;
+  const isStaff = session?.user?.role === "ADMIN" || session?.user?.role === "STAFF";
 
   return (
     <header
@@ -85,6 +86,11 @@ export function Header() {
               </Link>
             ))}
           </nav>
+          {isStaff && (
+            <Link href="/admin" aria-label="Painel admin" className="hidden sm:block hover:opacity-70">
+              <LayoutDashboard size={20} />
+            </Link>
+          )}
           <Link href="/produtos" aria-label="Buscar" className="hidden sm:block hover:opacity-70">
             <Search size={20} />
           </Link>
@@ -129,6 +135,11 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          {isStaff && (
+            <Link href="/admin" className="text-lg uppercase tracking-wide text-furikai-white">
+              Painel admin
+            </Link>
+          )}
         </nav>
       )}
     </header>

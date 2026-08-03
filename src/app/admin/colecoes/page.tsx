@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MediaUploader, type MediaItem } from "@/components/admin/media-uploader";
 
 type Collection = {
   id: string;
@@ -66,7 +67,29 @@ export default function AdminColecoesPage() {
       <div className="border border-furikai-gray-700 p-4 space-y-3">
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nome da coleção" className="w-full bg-transparent border border-furikai-gray-700 px-3 py-2 text-sm" />
         <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descrição curta" className="w-full bg-transparent border border-furikai-gray-700 px-3 py-2 text-sm" />
-        <input value={coverImage} onChange={(e) => setCoverImage(e.target.value)} placeholder="URL da imagem de capa (via aba Mídia)" className="w-full bg-transparent border border-furikai-gray-700 px-3 py-2 text-sm" />
+
+        <div className="space-y-2">
+          <p className="text-xs text-furikai-gray-500">Imagem de capa</p>
+          {coverImage ? (
+            <div className="relative w-40">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={coverImage} alt="Capa da coleção" className="w-40 aspect-square object-cover border border-furikai-gray-700" />
+              <button
+                onClick={() => setCoverImage("")}
+                className="absolute top-1 right-1 bg-black/70 text-white w-5 h-5 text-xs"
+              >
+                ×
+              </button>
+            </div>
+          ) : (
+            <MediaUploader
+              onUploaded={(item: MediaItem) => {
+                if (item.type === "IMAGE") setCoverImage(item.url);
+              }}
+            />
+          )}
+        </div>
+
         {error && <p className="text-xs text-furikai-red-bright">{error}</p>}
         <button onClick={create} className="px-5 py-2 bg-furikai-white text-furikai-black text-xs uppercase tracking-wide">
           Criar coleção
