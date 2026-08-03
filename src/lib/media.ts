@@ -29,10 +29,6 @@ export const homeMedia = {
   editorialBannerVideo: "/assets/videos/editorial-banner.mp4",
   editorialBannerImage: "/assets/images/editorial-banner.jpg",
 
-  // Segundo vídeo com scroll scrubbing (comunidade / encontros)
-  secondScrollVideoDesktop: "/assets/videos/scroll-community.mp4",
-  secondScrollVideoMobile: "/assets/videos/scroll-community-mobile.mp4",
-
   logo: "/assets/logos/furikai-logo.svg",
   logoMark: "/assets/logos/furikai-mark.svg",
 } as const;

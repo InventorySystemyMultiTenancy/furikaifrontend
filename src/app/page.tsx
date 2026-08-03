@@ -1,7 +1,6 @@
 import { backendFetch } from "@/lib/backend-client";
 import { mediaExists, homeMedia } from "@/lib/media";
 import { HeroScrollVideo } from "@/components/home/hero-scroll-video-loader";
-import { ScrollVideoSection } from "@/components/home/scroll-video-section";
 import { ProductGrid } from "@/components/shop/product-grid";
 import { EditorialBanner } from "@/components/home/editorial-banner";
 import { CollectionsSection } from "@/components/home/collections-section";
@@ -31,7 +30,9 @@ export default async function HomePage() {
   return (
     <HeroScrollVideo
       desktopSrc={homeMedia.firstScrollVideoDesktop}
-      mobileSrc={homeMedia.secondScrollVideoDesktop}
+      mobileSrc={
+        mediaExists(homeMedia.firstScrollVideoMobile) ? homeMedia.firstScrollVideoMobile : undefined
+      }
       overlay={
         <div className="relative h-full min-h-screen flex flex-col items-center justify-center px-6">
           <p className="absolute top-24 md:top-28 font-display text-sm md:text-base tracking-[0.4em] text-furikai-gray-400">
@@ -74,18 +75,6 @@ export default async function HomePage() {
       </section>
 
       <EditorialBanner />
-
-      <ScrollVideoSection
-        desktopSrc={homeMedia.secondScrollVideoDesktop}
-        mobileSrc={
-          mediaExists(homeMedia.secondScrollVideoMobile) ? homeMedia.secondScrollVideoMobile : undefined
-        }
-        texts={[
-          { at: 0, until: 0.25, text: "Encontros que viram lenda." },
-          { at: 0.35, until: 0.6, text: "Motor, fumaça, luz." },
-          { at: 0.7, until: 1, text: "Essa é a nossa pista." },
-        ]}
-      />
 
       <CollectionsSection collections={collections} />
 
