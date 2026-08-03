@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/lib/auth";
 
 const ADMIN_ROLES = new Set(["ADMIN", "STAFF"]);
 
-export default async function middleware(req: Request & { nextUrl: URL }) {
+export default auth((req) => {
   const { nextUrl } = req;
-  const token = await getToken({ req: req as never, secret: process.env.AUTH_SECRET });
-  const isLoggedIn = !!token;
-  const role = token?.role as string | undefined;
+  const isLoggedIn = !!req.auth;
+  const role = req.auth?.user?.role;
 
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
   const isAccountRoute = nextUrl.pathname.startsWith("/minha-conta");
@@ -28,7 +27,7 @@ export default async function middleware(req: Request & { nextUrl: URL }) {
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: ["/admin/:path*", "/minha-conta/:path*", "/checkout/:path*"],
