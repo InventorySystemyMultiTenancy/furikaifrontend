@@ -2,14 +2,16 @@
 
 import { useState, Suspense } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthShell, inputClass, primaryButtonClass } from "@/components/ui/auth-shell";
+
+const ADMIN_ROLES = new Set(["ADMIN", "STAFF"]);
 
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const callbackUrl = params.get("callbackUrl") ?? "/minha-conta";
+  const explicitCallbackUrl = params.get("callbackUrl");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +27,17 @@ function LoginForm() {
       setError("E-mail ou senha inválidos.");
       return;
     }
-    router.push(callbackUrl);
+
+    // Se o usuário chegou aqui redirecionado de uma rota protegida (ex.:
+    // /admin/pedidos ou /checkout), volta pra lá. Senão, manda cada papel
+    // pro lugar que faz sentido: admin/staff pro painel, cliente pra loja.
+    if (explicitCallbackUrl) {
+      router.push(explicitCallbackUrl);
+    } else {
+      const session = await getSession();
+      const role = session?.user?.role;
+      router.push(role && ADMIN_ROLES.has(role) ? "/admin" : "/produtos");
+    }
     router.refresh();
   }
 
