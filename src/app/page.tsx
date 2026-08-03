@@ -1,12 +1,13 @@
 import { backendFetch } from "@/lib/backend-client";
 import { mediaExists, homeMedia } from "@/lib/media";
-import { HeroSection } from "@/components/home/hero-section";
+import { HeroScrollVideo } from "@/components/home/hero-scroll-video-loader";
 import { ScrollVideoSection } from "@/components/home/scroll-video-section";
 import { ProductGrid } from "@/components/shop/product-grid";
 import { EditorialBanner } from "@/components/home/editorial-banner";
 import { CollectionsSection } from "@/components/home/collections-section";
 import { CommunitySection } from "@/components/home/community-section";
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
@@ -28,16 +29,36 @@ export default async function HomePage() {
   const collections = await getCollections();
 
   return (
-    <>
-      <HeroSection
-        modelAvailable={mediaExists(homeMedia.heroModel)}
-        modelSrc={homeMedia.heroModel}
-        fallbackImageAvailable={mediaExists(homeMedia.heroFallbackImage)}
-        fallbackImageSrc={homeMedia.heroFallbackImage}
-        fallbackVideoAvailable={mediaExists(homeMedia.heroFallbackVideo)}
-        fallbackVideoSrc={homeMedia.heroFallbackVideo}
-      />
+    <HeroScrollVideo
+      desktopSrc={homeMedia.firstScrollVideoDesktop}
+      mobileSrc={homeMedia.secondScrollVideoDesktop}
+      overlay={
+        <div className="relative h-full min-h-screen flex flex-col items-center justify-center px-6">
+          <p className="absolute top-24 md:top-28 font-display text-sm md:text-base tracking-[0.4em] text-furikai-gray-400">
+            COLEÇÃO 2026 — STREET DIVISION
+          </p>
 
+          <h1 className="font-display text-5xl md:text-8xl tracking-[0.1em] text-furikai-white">
+            FURIKAI
+          </h1>
+          <p className="text-furikai-gray-300 text-sm md:text-base tracking-wide mt-2 mb-8 text-center">
+            Cultura em movimento. Construído para o asfalto.
+          </p>
+
+          <Link
+            href="/produtos"
+            className="px-9 py-3 bg-furikai-white text-furikai-black text-sm uppercase tracking-wider hover:bg-furikai-red-bright hover:text-furikai-white transition-colors"
+          >
+            Explorar coleção
+          </Link>
+
+          <div className="absolute bottom-8 flex flex-col items-center gap-2 text-furikai-gray-400 animate-bounce">
+            <span className="text-[10px] uppercase tracking-[0.3em]">Rolar</span>
+            <ChevronDown size={18} />
+          </div>
+        </div>
+      }
+    >
       <section className="py-24 px-6 lg:px-10">
         <div className="mx-auto max-w-[1800px]">
           <ProductGrid title="Vitrine principal" showFilters={false} pageSize={8} />
@@ -51,19 +72,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      <ScrollVideoSection
-        desktopSrc={homeMedia.firstScrollVideoDesktop}
-        mobileSrc={
-          mediaExists(homeMedia.firstScrollVideoMobile) ? homeMedia.firstScrollVideoMobile : undefined
-        }
-        texts={[
-          { at: 0, until: 0.22, text: "Não é apenas um clube." },
-          { at: 0.3, until: 0.52, text: "É cultura em movimento." },
-          { at: 0.6, until: 0.8, text: "Built for the streets." },
-          { at: 0.85, until: 1, text: "FURIKAI", variant: "hero" },
-        ]}
-      />
 
       <EditorialBanner />
 
@@ -82,6 +90,6 @@ export default async function HomePage() {
       <CollectionsSection collections={collections} />
 
       <CommunitySection />
-    </>
+    </HeroScrollVideo>
   );
 }
